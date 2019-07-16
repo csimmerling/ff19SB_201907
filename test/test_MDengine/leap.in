@@ -1,0 +1,4 @@
+source leaprc.protein.ff19SB
+m = sequence { ACE ALA GLY PRO SER CYS THR VAL ILE LEU MET TYR PHE TRP ASP ASN ASH GLU GLN GLH LYS ARG HIP HID HIE LYN NME }
+saveamberparm m scramble.parm7 scramble.inpcrd
+quit

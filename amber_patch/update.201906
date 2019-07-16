@@ -1,0 +1,389 @@
+Common subdirectories: src/pmemd/src/cuda and src/pmemd/src_new/cuda
+diff -u src/pmemd/src/gb_alltasks_setup.F90 src/pmemd/src_new/gb_alltasks_setup.F90
+--- src/pmemd/src/gb_alltasks_setup.F90	2019-06-19 22:09:34.257253478 -0400
++++ src/pmemd/src_new/gb_alltasks_setup.F90	2019-06-19 22:18:32.480268490 -0400
+@@ -124,6 +124,8 @@
+   if (charmm_active) then
+     call angles_ub_setup(num_ints, num_reals, use_atm_map)
+     call dihedrals_imp_setup(num_ints, num_reals, use_atm_map)
++  end if
++  if (charmm_active .or. cmap_term_count > 0) then
+     call cmap_setup(num_ints, num_reals, use_atm_map)
+   endif
+   call nb14_setup(num_ints, num_reals, use_atm_map)
+@@ -145,6 +147,8 @@
+   if (charmm_active) then
+     call angles_ub_setup(num_ints, num_reals, use_atm_map)
+     call dihedrals_imp_setup(num_ints, num_reals, use_atm_map)
++  endif
++  if (charmm_active .or. cmap_term_count > 0) then
+     call cmap_setup(num_ints, num_reals, use_atm_map)
+   endif
+   call nb14_setup(num_ints, num_reals, use_atm_map)
+@@ -160,6 +164,10 @@
+     num_ints = num_ints - size(gbl_cmap) * cmap_rec_ints
+ 
+     deallocate(gbl_angle_ub, gbl_dihed_imp, gbl_cmap)
++  else if (cmap_term_count > 0) then
++    num_ints = num_ints - size(gbl_cmap) * cmap_rec_ints
++
++    deallocate(gbl_cmap)
+   endif
+ 
+   deallocate(gbl_angle, gbl_dihed)
+diff -u src/pmemd/src/master_setup.F90 src/pmemd/src_new/master_setup.F90
+--- src/pmemd/src/master_setup.F90	2019-06-19 22:09:41.073253668 -0400
++++ src/pmemd/src_new/master_setup.F90	2019-06-19 22:18:32.484268491 -0400
+@@ -31,7 +31,7 @@
+ subroutine master_setup(num_ints, num_reals, new_stack_limit, terminal_flag)
+ 
+   use axis_optimize_mod
+-  use charmm_mod, only : charmm_active
++  !use charmm_mod, only : charmm_active
+   use cmap_mod, only : generate_cmap_derivatives
+   use cit_mod
+   use constantph_mod, only : cnstph_read, cph_igb
+@@ -329,7 +329,8 @@
+ 
+   if (icnste .gt. 0) call cnste_read(num_ints, num_reals)
+ 
+-  if (charmm_active) call generate_cmap_derivatives
++  !if (charmm_active) call generate_cmap_derivatives
++  if (cmap_term_count > 0) call generate_cmap_derivatives
+ 
+ ! If the user has requested NMR restraints, do a cursory read of the
+ ! restraints file(s) now to determine the amount of memory necessary
+diff -u src/pmemd/src/parallel.F90 src/pmemd/src_new/parallel.F90
+--- src/pmemd/src/parallel.F90	2019-06-19 22:09:34.571253487 -0400
++++ src/pmemd/src_new/parallel.F90	2019-06-19 22:18:32.491268491 -0400
+@@ -2177,6 +2177,7 @@
+   use charmm_mod,        only : charmm_active
+   use mdin_ctrl_dat_mod, only : ips, nmropt
+   use ti_mod
++  use prmtop_dat_mod
+ 
+   implicit none
+ 
+@@ -2233,6 +2234,8 @@
+   if (charmm_active) then
+     call angles_ub_setup(num_ints, num_reals, use_atm_map)
+     call dihedrals_imp_setup(num_ints, num_reals, use_atm_map)
++  end if
++  if (cmap_term_count > 0) then
+     call cmap_setup(num_ints, num_reals, use_atm_map)
+   endif
+   call nb14_setup(num_ints, num_reals, use_atm_map)
+diff -u src/pmemd/src/pme_alltasks_setup.F90 src/pmemd/src_new/pme_alltasks_setup.F90
+--- src/pmemd/src/pme_alltasks_setup.F90	2019-06-19 22:09:33.951253469 -0400
++++ src/pmemd/src_new/pme_alltasks_setup.F90	2019-06-19 22:18:32.422268489 -0400
+@@ -260,6 +260,8 @@
+   if (charmm_active) then
+     call angles_ub_setup(num_ints, num_reals, use_atm_map)
+     call dihedrals_imp_setup(num_ints, num_reals, use_atm_map)
++  end if
++  if (cmap_term_count > 0) then
+     call cmap_setup(num_ints, num_reals, use_atm_map)
+   endif
+ 
+@@ -271,9 +273,12 @@
+   if (charmm_active) then
+     num_ints = num_ints - size(gbl_angle_ub) * angle_ub_rec_ints
+     num_ints = num_ints - size(gbl_dihed_imp) * dihed_imp_rec_ints
+-    num_ints = num_ints - size(gbl_cmap) * cmap_rec_ints
+ 
+-    deallocate(gbl_angle_ub, gbl_dihed_imp, gbl_cmap)
++    deallocate(gbl_angle_ub, gbl_dihed_imp)
++  endif
++  if (cmap_term_count > 0) then
++    num_ints = num_ints - size(gbl_cmap) * cmap_rec_ints
++    deallocate(gbl_cmap)
+   endif
+ 
+   deallocate(gbl_angle, gbl_dihed)
+diff -u src/pmemd/src/prmtop_dat.F90 src/pmemd/src_new/prmtop_dat.F90
+--- src/pmemd/src/prmtop_dat.F90	2019-06-19 22:09:33.751253464 -0400
++++ src/pmemd/src_new/prmtop_dat.F90	2019-06-19 22:18:32.497268491 -0400
+@@ -413,18 +413,22 @@
+     call nxtsec(prmtop, mdout, 0, fmtin, type, fmt, errcode)
+     read(prmtop,fmt) nimprtyp
+ 
++  end if
++
+     !Read CHARMM CMAP
+     fmtin = '(2I8)'
+     type = 'CHARMM_CMAP_COUNT'
+     call nxtsec(prmtop, mdout, 1, fmtin, type, fmt, errcode)
+-
++    
++    if (errcode .ne. 0) then
++      type = 'CMAP_COUNT'
++      call nxtsec(prmtop, mdout, 1, fmtin, type, fmt, errcode)
++    end if
++    
+     if (errcode == 0) then
+       read(prmtop,fmt) cmap_term_count, cmap_type_count
+     end if
+ 
+-  end if
+-
+-
+ 
+ 
+ ! Here we set nscm and ndfmin. We need natom to do this...
+@@ -926,41 +930,54 @@
+ 
+     read(prmtop, fmt) (gbl_imp_phase(i),    i = 1, nimprtyp)
+ 
++  end if
++
+     !CMAP
+ 
+-    if ( cmap_term_count > 0 ) then
+-      fmtin = '(9I8)'
+-      type = 'CHARMM_CMAP_INDEX'
++  if ( cmap_term_count > 0 ) then
++    fmtin = '(9I8)'
++    type = 'CHARMM_CMAP_INDEX'
++    call nxtsec(prmtop, mdout, 1, fmtin, type, fmt, errcode)
++    if (errcode .ne. 0) then
++      type = 'CMAP_INDEX'
+       call nxtsec(prmtop, mdout, 0, fmtin, type, fmt, errcode)
+-      read(prmtop, fmt) (gbl_cmap(i)%atm_i,&
+-                         gbl_cmap(i)%atm_j,&
+-                         gbl_cmap(i)%atm_k,&
+-                         gbl_cmap(i)%atm_l,&
+-                         gbl_cmap(i)%atm_m,&
+-                         gbl_cmap(i)%parm_idx,&
+-                      i=1, cmap_term_count)
++    end if
++    read(prmtop, fmt) (gbl_cmap(i)%atm_i,&
++                       gbl_cmap(i)%atm_j,&
++                       gbl_cmap(i)%atm_k,&
++                       gbl_cmap(i)%atm_l,&
++                       gbl_cmap(i)%atm_m,&
++                       gbl_cmap(i)%parm_idx,&
++                    i=1, cmap_term_count)
+ 
+-      fmtin = '(20I4)'
+-      type = 'CHARMM_CMAP_RESOLUTION'
++    fmtin = '(20I4)'
++    type = 'CHARMM_CMAP_RESOLUTION'
++    call nxtsec(prmtop, mdout, 1, fmtin, type, fmt, errcode)
++    if (errcode .ne. 0) then
++      type = 'CMAP_RESOLUTION'
+       call nxtsec(prmtop, mdout, 0, fmtin, type, fmt, errcode)
+-      read(prmtop, fmt) (gbl_cmap_res(i), i=1, cmap_type_count)
++    end if
++    read(prmtop, fmt) (gbl_cmap_res(i), i=1, cmap_type_count)
+ 
+-      do i=1,cmap_type_count
+-        write(word,'(i2.2)')i
+-        fmtin = '(8(F9.5))'
+-        type = "CHARMM_CMAP_PARAMETER_" // word
++    do i=1,cmap_type_count
++      write(word,'(i2.2)')i
++      fmtin = '(8(F9.5))'
++      type = "CHARMM_CMAP_PARAMETER_" // word
++      call nxtsec(prmtop, mdout, 1, fmtin, type, fmt, errcode)
++      if (errcode .ne. 0) then
++        type = "CMAP_PARAMETER_" // word
+         call nxtsec(prmtop, mdout, 0, fmtin, type, fmt, errcode)
++      end if
+ 
+-        read(prmtop, fmt) gbl_cmap_grid(i, 1:gbl_cmap_res(i), &
+-                                           1:gbl_cmap_res(i) )
++      read(prmtop, fmt) gbl_cmap_grid(i, 1:gbl_cmap_res(i), &
++                                         1:gbl_cmap_res(i) )
+ 
+-        !Also take advantage of this loop to set the step size
+-        gbl_cmap_grid_step_size(i) = 360/gbl_cmap_res(i)
+-      enddo
++      !Also take advantage of this loop to set the step size
++      gbl_cmap_grid_step_size(i) = 360/gbl_cmap_res(i)
++    enddo
+ 
+-    end if ! cmap_term_count > 0
++  end if ! cmap_term_count > 0
+ 
+-  end if
+ 
+ ! Read the dihedral information:
+ 
+@@ -1670,7 +1687,8 @@
+       call mpi_bcast(gbl_imp_phase, nimprtyp, mpi_double_precision, 0, &
+                      pmemd_comm, err_code_mpi)
+     end if
+-  
++  end if
++ 
+   ! CMAP TODO: 24 is a hard coded hack
+     if ( cmap_type_count > 0 ) then
+       call mpi_bcast(gbl_cmap_res, cmap_type_count, mpi_integer, 0, &
+@@ -1691,9 +1709,6 @@
+ 
+    end if 
+ 
+-  end if
+-
+-
+ 
+ 
+   ! Generalized Born:
+@@ -1735,6 +1750,8 @@
+ 
+     call mpi_bcast(gbl_dihed_imp, size(gbl_dihed_imp) * bytes_per_unit, mpi_byte, 0, &
+                    pmemd_comm, err_code_mpi)
++  end if
++  if (cmap_term_count > 0) then
+     !CMAP
+     call get_bytesize(gbl_cmap(1), gbl_cmap(2), bytes_per_unit)
+ 
+@@ -1813,6 +1830,10 @@
+              gbl_ub_r0(nubtypes),&
+              gbl_imp_pk(nimprtyp),& 
+              gbl_imp_phase(nimprtyp),&
++             stat = alloc_failed)
++  end if
++  if (cmap_term_count > 0) then
++    allocate( &
+              gbl_cmap_res(cmap_type_count), &
+              gbl_cmap_grid_step_size(cmap_type_count), &
+              gbl_cmap_grid(cmap_type_count,24,24),& !24 is a hardcoded hack
+@@ -1836,7 +1857,10 @@
+   if (charmm_active) then
+     num_reals = num_reals + size(gbl_cn114) + size(gbl_cn214) + &
+                             size(gbl_ub_rk) + size(gbl_ub_r0) + size(gbl_imp_pk) + &
+-                            size(gbl_imp_phase) + &
++                            size(gbl_imp_phase)
++  end if
++  if (cmap_term_count > 0) then
++    num_reals = num_reals + &
+                             size(gbl_cmap_res) + size(gbl_cmap_grid_step_size) + &
+                             size(gbl_cmap_grid) + size(gbl_cmap_dPhi) + &
+                             size(gbl_cmap_dPsi) + size(gbl_cmap_dPhi_dPsi)
+@@ -1871,11 +1895,17 @@
+     allocate( &
+              gbl_angle_ub(gbl_angle_ub_allocsize), &
+              gbl_dihed_imp(gbl_dihed_imp_allocsize), &
+-             gbl_cmap(gbl_cmap_allocsize), &
+              stat = alloc_failed)
+   
+     if (alloc_failed .ne. 0) call setup_alloc_error
+   end if
++  if (charmm_active .or. cmap_term_count > 0) then
++    allocate( &
++             gbl_cmap(gbl_cmap_allocsize), &
++             stat = alloc_failed)
++
++    if (alloc_failed .ne. 0) call setup_alloc_error
++  end if
+ 
+ 
+   num_ints = num_ints + size(gbl_bond) * bond_rec_ints + &
+@@ -1884,7 +1914,10 @@
+ 
+   if (charmm_active) then
+     num_ints = num_ints + size(gbl_angle_ub) * angle_ub_rec_ints + &
+-               size(gbl_dihed_imp) * dihed_imp_rec_ints + &
++               size(gbl_dihed_imp) * dihed_imp_rec_ints
++  end if
++  if (cmap_term_count > 0) then
++    num_ints = num_ints + &
+                size(gbl_cmap) * cmap_rec_ints
+   end if
+ 
+diff -u src/pmemd/src/runfiles.F90 src/pmemd/src_new/runfiles.F90
+--- src/pmemd/src/runfiles.F90	2019-06-19 22:09:34.278253478 -0400
++++ src/pmemd/src_new/runfiles.F90	2019-06-19 22:18:32.456268490 -0400
+@@ -640,6 +640,7 @@
+   use mdin_ewald_dat_mod
+   use nmr_calls_mod
+   use parallel_dat_mod
++  use prmtop_dat_mod, only : cmap_term_count
+ #ifdef MPI
+   use remd_mod, only   : remd_method, remd_dimension, group_num, replica_indexes
+ #endif
+@@ -702,6 +703,8 @@
+   if (charmm_active) then
+     write(mdout, 9040) si(si_angle_ub_ene), si(si_dihedral_imp_ene), & 
+                        si(si_cmap_ene)
++  else if (cmap_term_count > 0) then
++    write(mdout, 9040) 0.d0,0.d0, si(si_cmap_ene)
+   endif
+   write(mdout, 9049) si(si_vdw_14_ene), si(si_elect_14_ene), si(si_vdw_ene)
+ 
+@@ -859,6 +862,8 @@
+   if (charmm_active) then
+     write(mdinfo, 9040) si(si_angle_ub_ene), si(si_dihedral_imp_ene), &
+                         si(si_cmap_ene)
++  else if (cmap_term_count > 0) then
++    write(mdinfo, 9040) 0.d0,0.d0,si(si_cmap_ene)
+   endif
+   write(mdinfo, 9049) si(si_vdw_14_ene), si(si_elect_14_ene), si(si_vdw_ene)
+ 
+diff -u src/pmemd/src/runmin.F90 src/pmemd/src_new/runmin.F90
+--- src/pmemd/src/runmin.F90	2019-06-19 22:09:31.939253413 -0400
++++ src/pmemd/src_new/runmin.F90	2019-06-19 22:18:32.461268490 -0400
+@@ -54,6 +54,7 @@
+   use state_info_mod
+   use timers_mod
+   use ti_mod
++  use prmtop_dat_mod, only: cmap_term_count
+ 
+   implicit none
+ 
+@@ -930,6 +931,7 @@
+   use state_info_mod
+   use charmm_mod, only : charmm_active
+   use ti_mod
++  use prmtop_dat_mod, only: cmap_term_count
+   implicit none
+ 
+ ! Formal arguments:
+@@ -958,6 +960,8 @@
+   if (charmm_active) then
+     write(mdout, 9039) si(si_angle_ub_ene), si(si_dihedral_imp_ene), &
+                        si(si_cmap_ene)
++  else if (cmap_term_count > 0) then 
++    write(mdout, 9039) 0.d0,0.d0,si(si_cmap_ene)
+   endif
+ 
+   if (using_pme_potential) then
+@@ -1023,6 +1027,8 @@
+   if (charmm_active) then
+     write(mdinfo, 9039) si(si_angle_ub_ene), si(si_dihedral_imp_ene), &
+                         si(si_cmap_ene)
++  else if (cmap_term_count > 0) then
++    write(mdinfo, 9039) 0.d0,0.d0,si(si_cmap_ene)
+   endif
+ 
+   if (using_pme_potential) then
+diff -u src/pmemd/src/ti.F90 src/pmemd/src_new/ti.F90
+--- src/pmemd/src/ti.F90	2019-06-19 22:09:31.892253412 -0400
++++ src/pmemd/src_new/ti.F90	2019-06-19 22:18:32.476268490 -0400
+@@ -2365,6 +2365,7 @@
+ 
+   use file_io_dat_mod
+   use charmm_mod, only : charmm_active  
++  use prmtop_dat_mod, only: cmap_term_count
+ 
+   implicit none
+ 
+@@ -2400,9 +2401,14 @@
+                         sc_ener_in(si_vdw_ene)
+      write (mdout,1200) sc_ener_in(si_elect_ene)
+ 
+-     if(charmm_active) write (mdout,1400) sc_ener_in(si_angle_ub_ene), &
+-                                          sc_ener_in(si_dihedral_imp_ene), &
+-                                          sc_ener_in(si_cmap_ene) !charmm
++     if(charmm_active) then
++       write (mdout,1400) sc_ener_in(si_angle_ub_ene), &
++                          sc_ener_in(si_dihedral_imp_ene), &
++                          sc_ener_in(si_cmap_ene) !charmm
++     else if(cmap_term_count > 0) then
++       write(mdout,1400) 0, 0, &
++                         sc_ener_in(si_cmap_ene) !cmap Chuan Tian 
++     end if 
+ 
+      write (mdout,1300) sc_ener_aug_in(ti_rest_dist_ene), &
+                         sc_ener_aug_in(ti_rest_ang_ene), &

@@ -1,0 +1,4 @@
+source leaprc.protein.ff19SB
+m = loadpdb scramble_tleap.pdb
+saveamberparm m scramble.prmtop scramble.inpcrd
+quit

@@ -1,0 +1,9 @@
+#input
+&cntrl   
+   imin = 5, maxcyc = 1,
+   ntx = 1,ig=9999,
+   ntwe = 0, ntwr = 1, ntpr = 1, 
+   ntc = 1, ntf = 1, ntb = 0,
+   cut = 9999.0,
+   ioutfm=0, ntxo=1,
+/

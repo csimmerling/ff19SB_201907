@@ -1,0 +1,308 @@
+
+          -------------------------------------------------------
+          Amber 18 PMEMD                              2018
+          -------------------------------------------------------
+
+| PMEMD implementation of SANDER, Release 18
+
+| Run on 07/16/2019 at 13:02:41
+
+|   Executable path: /mnt/raidc2/ctian/amber18_update_CMAPpatch/bin/pmemd.cuda
+| Working directory: /mnt/raidc2/ctian/ff19SB_beta_2019/test_MDengine
+|          Hostname: Unknown
+  [-O]verwriting output
+
+File Assignments:
+|   MDIN: md.in                                                                 
+|  MDOUT: md_pmemd_cuda_SPFP.out                                                
+| INPCRD: scramble.rst                                                          
+|   PARM: scramble.parm7                                                        
+| RESTRT: restrt                                                                
+|   REFC: refc                                                                  
+|  MDVEL: mdvel                                                                 
+|   MDEN: mden                                                                  
+|  MDCRD: mdcrd                                                                 
+| MDINFO: mdinfo                                                                
+|  MDFRC: mdfrc                                                                 
+
+
+ Here is the input file:
+
+10md.in 400ns                                                                  
+&cntrl                                                                         
+   imin = 0, nstlim = 5, dt = 0.002,                                           
+   irest = 1, ntx = 5, ig = 9999,                                              
+   temp0 = 300.0,                                                              
+   ntc = 2, ntf = 2, tol = 0.00001,                                            
+   ntwx = 1, ntwe = 0, ntwr = 1, ntpr = 1,                                     
+   cut = 9999.0, igb=6,                                                        
+   ntt =1, ntb = 0,                                                            
+   nscm = 1000,                                                                
+   ioutfm=0, ntxo=1,                                                           
+/                                                                              
+
+
+| irandom = 1, using AMBER's internal random number generator (default).
+ 
+|--------------------- INFORMATION ----------------------
+| GPU (CUDA) Version of PMEMD in use: NVIDIA GPU IN USE.
+|                    Version 18.0.0
+| 
+|                      03/25/2018
+| 
+| Implementation by:
+|                    Ross C. Walker     (SDSC)
+|                    Scott Le Grand     (nVIDIA)
+| 
+| Version 18 performance extensions by:
+|                    David Cerutti     (Rutgers)
+| 
+| Precision model in use:
+|      [SPFP] - Single Precision Forces, 64-bit Fixed Point
+|               Accumulation. (Default)
+| 
+|--------------------------------------------------------
+ 
+|----------------- CITATION INFORMATION -----------------
+|
+|    When publishing work that utilized the CUDA version
+|    of AMBER, please cite the following in addition to
+|    the regular AMBER citations:
+|
+|  - Andreas W. Goetz; Mark J. Williamson; Dong Xu;
+|    Duncan Poole; Scott Le Grand; Ross C. Walker
+|    "Routine microsecond molecular dynamics simulations
+|    with AMBER - Part I: Generalized Born", J. Chem.
+|    Theory Comput., 2012, 8 (5), pp1542-1555.
+|
+|  - Scott Le Grand; Andreas W. Goetz; Ross C. Walker
+|    "SPFP: Speed without compromise - a mixed precision
+|    model for GPU accelerated molecular dynamics
+|    simulations.", Comp. Phys. Comm., 2013, 184
+|    pp374-380, DOI: 10.1016/j.cpc.2012.09.022
+|
+|--------------------------------------------------------
+ 
+|------------------- GPU DEVICE INFO --------------------
+|
+|            CUDA_VISIBLE_DEVICES: not set
+|   CUDA Capable Devices Detected:      4
+|           CUDA Device ID in use:      0
+|                CUDA Device Name: GeForce GTX 780
+|     CUDA Device Global Mem Size:   3022 MB
+| CUDA Device Num Multiprocessors:     12
+|           CUDA Device Core Freq:   0.90 GHz
+|
+|--------------------------------------------------------
+ 
+| Conditional Compilation Defines Used:
+| PUBFFT
+| BINTRAJ
+| CUDA
+| EMIL
+
+| New format PARM file being parsed.
+| Version =    1.000 Date = 07/02/19 Time = 12:04:00
+
+| Note: 1-4 EEL scale factors are being read from the topology file.
+
+| Note: 1-4 VDW scale factors are being read from the topology file.
+| INFO:    Reading atomic numbers from topology file.
+| Duplicated    0 dihedrals
+
+| Duplicated    0 dihedrals
+
+--------------------------------------------------------------------------------
+   1.  RESOURCE   USE: 
+--------------------------------------------------------------------------------
+
+ NATOM  =     421 NTYPES =      15 NBONH =     203 MBONA  =     225
+ NTHETH =     459 MTHETA =     303 NPHIH =     956 MPHIA  =     924
+ NHPARM =       0 NPARM  =       0 NNB   =    2298 NRES   =      27
+ NBONA  =     225 NTHETA =     303 NPHIA =     924 NUMBND =      69
+ NUMANG =     166 NPTRA  =     209 NATYP =      34 NPHB   =       0
+ IFBOX  =       0 NMXRS  =      24 IFCAP =       0 NEXTRA =       0
+ NCOPY  =       0
+
+ Implicit solvent radii are modified Bondi radii (mbondi)                                                   
+|CHARMM: Reticulating splines.
+
+--------------------------------------------------------------------------------
+   2.  CONTROL  DATA  FOR  THE  RUN
+--------------------------------------------------------------------------------
+
+ACE                                                                             
+
+General flags:
+     imin    =       0, nmropt  =       0
+
+Nature and format of input:
+     ntx     =       5, irest   =       1, ntrx    =       1
+
+Nature and format of output:
+     ntxo    =       1, ntpr    =       1, ntrx    =       1, ntwr    =       1
+     iwrap   =       0, ntwx    =       1, ntwv    =       0, ntwe    =       0
+     ioutfm  =       0, ntwprt  =       0, idecomp =       0, rbornstat=      0
+
+Potential function:
+     ntf     =       2, ntb     =       0, igb     =       6, nsnb    =      25
+     ipol    =       0, gbsa    =       0, iesp    =       0
+     dielc   =   1.00000, cut     =9999.00000, intdiel =   1.00000
+
+Frozen or restrained atoms:
+     ibelly  =       0, ntr     =       0
+
+Molecular dynamics:
+     nstlim  =         5, nscm    =      1000, nrespa  =         1
+     t       =   0.00000, dt      =   0.00200, vlimit  =  -1.00000
+
+Berendsen (weak-coupling) temperature regulation:
+     temp0   = 300.00000, tempi   =   0.00000, tautp   =   1.00000
+
+SHAKE:
+     ntc     =       2, jfastw  =       0
+     tol     =   0.00001
+
+| Intermolecular bonds treatment:
+|     no_intermolecular_bonds =       1
+
+| Energy averages sample interval:
+|     ene_avg_sampling =       1
+
+--------------------------------------------------------------------------------
+   3.  ATOMIC COORDINATES AND VELOCITIES
+--------------------------------------------------------------------------------
+
+ACE                                                                             
+ begin time read from input coords =     1.000 ps
+
+ 
+ Number of triangulated 3-point waters found:        0
+| Dynamic Memory, Types Used:
+| Reals               47600
+| Integers            46106
+
+| GPU memory information (estimate):
+| KB of GPU memory in use:         0
+| KB of CPU memory in use:         0
+
+--------------------------------------------------------------------------------
+   4.  RESULTS
+--------------------------------------------------------------------------------
+
+
+ NSTEP =        1   TIME(PS) =       1.002  TEMP(K) =   188.03  PRESS =     0.0
+ Etot   =       355.8572  EKtot   =       196.9115  EPtot      =       158.9458
+ BOND   =        48.3850  ANGLE   =       206.4172  DIHED      =       157.2678
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =       -18.7350
+ 1-4 NB =       114.2587  1-4 EEL =      1163.9755  VDWAALS    =        97.1680
+ EELEC  =     -1609.7913  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+
+ NSTEP =        2   TIME(PS) =       1.004  TEMP(K) =   202.43  PRESS =     0.0
+ Etot   =       355.2531  EKtot   =       211.9995  EPtot      =       143.2536
+ BOND   =        41.6456  ANGLE   =       201.3841  DIHED      =       157.8648
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =       -18.7623
+ 1-4 NB =       113.9619  1-4 EEL =      1163.2314  VDWAALS    =        94.1431
+ EELEC  =     -1610.2150  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+
+ NSTEP =        3   TIME(PS) =       1.006  TEMP(K) =   202.46  PRESS =     0.0
+ Etot   =       356.0973  EKtot   =       212.0262  EPtot      =       144.0711
+ BOND   =        45.1841  ANGLE   =       203.1974  DIHED      =       158.4190
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =       -18.7708
+ 1-4 NB =       113.8242  1-4 EEL =      1162.0414  VDWAALS    =        90.2222
+ EELEC  =     -1610.0465  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+
+ NSTEP =        4   TIME(PS) =       1.008  TEMP(K) =   196.09  PRESS =     0.0
+ Etot   =       357.4935  EKtot   =       205.3593  EPtot      =       152.1343
+ BOND   =        53.7353  ANGLE   =       208.1907  DIHED      =       158.8290
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =       -18.7591
+ 1-4 NB =       113.7791  1-4 EEL =      1160.8261  VDWAALS    =        84.7815
+ EELEC  =     -1609.2482  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+
+ NSTEP =        5   TIME(PS) =       1.010  TEMP(K) =   198.62  PRESS =     0.0
+ Etot   =       357.9221  EKtot   =       208.0057  EPtot      =       149.9163
+ BOND   =        58.3701  ANGLE   =       208.1273  DIHED      =       159.1507
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =       -18.7279
+ 1-4 NB =       113.8107  1-4 EEL =      1160.0422  VDWAALS    =        77.2845
+ EELEC  =     -1608.1413  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+
+      A V E R A G E S   O V E R       5 S T E P S
+
+
+ NSTEP =        5   TIME(PS) =       1.010  TEMP(K) =   197.53  PRESS =     0.0
+ Etot   =       356.5247  EKtot   =       206.8604  EPtot      =       149.6642
+ BOND   =        49.4640  ANGLE   =       205.4633  DIHED      =       158.3063
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =       -18.7510
+ 1-4 NB =       113.9269  1-4 EEL =      1162.0233  VDWAALS    =        88.7199
+ EELEC  =     -1609.4885  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+
+      R M S  F L U C T U A T I O N S
+
+
+ NSTEP =        5   TIME(PS) =       1.010  TEMP(K) =     5.33  PRESS =     0.0
+ Etot   =         1.0135  EKtot   =         5.5793  EPtot      =         5.7392
+ BOND   =         5.9695  ANGLE   =         2.7284  DIHED      =         0.6742
+ UB     =         0.0000  IMP     =         0.0000  CMAP       =         0.0166
+ 1-4 NB =         0.1773  1-4 EEL =         1.4580  VDWAALS    =         7.0614
+ EELEC  =         0.7488  EGB     =         0.0000  RESTRAINT  =         0.0000
+ ------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+   5.  TIMINGS
+--------------------------------------------------------------------------------
+
+|  NonSetup CPU Time in Major Routines:
+|
+|     Routine           Sec        %
+|     ------------------------------
+|     Nonbond           0.00    4.59
+|     Bond              0.00    0.00
+|     Angle             0.00    0.00
+|     Dihedral          0.00    0.00
+|     Shake             0.00    0.31
+|     RunMD             0.02   95.04
+|     Other             0.00    0.07
+|     ------------------------------
+|     Total             0.03
+
+|  Generalized Born CPU Time:
+|
+|     Routine                 Sec        %
+|     ------------------------------------
+|     Radii Calc              0.00    0.00
+|     Diagonal Calc           0.00    0.00
+|     Off Diagonal Calc       0.00    0.00
+|     GBSA LCPO Calc          0.00    0.00
+|     ---------------------------------
+|     Total                   0.00    0.00
+
+|  Final Performance Info:
+|     -----------------------------------------------------
+|     Average timings for last       4 steps:
+|     Elapsed(s) =       0.03 Per Step(ms) =       8.70
+|         ns/day =      19.86   seconds/ns =    4349.98
+|
+|     Average timings for all steps:
+|     Elapsed(s) =       0.05 Per Step(ms) =      10.16
+|         ns/day =      17.00   seconds/ns =    5082.30
+|     -----------------------------------------------------
+
+|  Setup CPU time:            0.19 seconds
+|  NonSetup CPU time:         0.03 seconds
+|  Total CPU time:            0.21 seconds     0.00 hours
+
+|  Setup wall time:           1    seconds
+|  NonSetup wall time:        0    seconds
+|  Total wall time:           1    seconds     0.00 hours

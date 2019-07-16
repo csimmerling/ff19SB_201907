@@ -1,0 +1,12 @@
+10md.in 400ns
+&cntrl   
+   imin = 0, nstlim = 5, dt = 0.002,
+   irest = 1, ntx = 5, ig = 9999,
+   temp0 = 300.0,
+   ntc = 2, ntf = 2, tol = 0.00001,
+   ntwx = 1, ntwe = 0, ntwr = 1, ntpr = 1,
+   cut = 9999.0, igb=6,
+   ntt =1, ntb = 0, 
+   nscm = 1000,
+   ioutfm=0, ntxo=1,
+/

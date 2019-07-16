@@ -1,0 +1,25 @@
+Directories
+amber_patch: update.201906
+forcefield_files: leaprc.protein.ff19SB, parm19.dat, frcmod.ff19SB, amino19.lib
+test: test_MDengine and test_forcefield_parameter have necessary files for implementation and energy test 
+doc: forcefield_files.pdf
+
+Todo list:
+1. compile Amber18+AmberTools19 with all updates applied following Amber 19 Reference Manual
+
+2. copy amber_patch/update.201906 into $AMBERHOME
+
+3. go to $AMBERHOME and run: 
+   ./update_amber --apply-patch=update.201906
+
+4. copy forcefield_files/leaprc.protein.ff19SB into $AMBERHOME/dat/leap/cmd
+
+5. copy forcefield_files/frcmod.ff19SB and forcefield_files/parm19.dat into $AMBERHOME/dat/leap/parm
+
+6. copy forcefield_files/amino19.lib into $AMBERHOME/dat/leap/lib
+
+7. recompile amber following Amber 19 Reference Manual
+
+8. go to the test/test_forcefield_parameter, launch tleap with tleap.input to generate scramble.prmtop and launch run.sh to test if the energies in single_point_ene.output.ref can be reproduced
+
+9. go to the test/test_MDengine, launch run.sh with multiple CPUs and multiple GPUs available to test if the energies in md_pmemd.out.ref, md_pmemd_mpi.out.ref, md_pmemd_cuda_SPFP.out.ref, md_pmemd_cuda_DPFP.out.ref and md_pmemd_cuda_SPFP_MPI.out.ref can be reproduced
