@@ -1,0 +1,72 @@
+#!/bin/csh -f
+#TEST-PROGRAM pmemd.cuda
+#TEST-DESCRIP TO_BE_DEtermined
+#TEST-PURPOSE regression, basic
+#TEST-STATE   undocumented
+
+
+if( ! $?DO_PARALLEL ) then
+  setenv DO_PARALLEL " "
+  if( $?TESTsander ) then
+      set sander = $TESTsander
+  else
+      set sander = ${AMBERHOME}/bin/pmemd.cuda_$1
+  endif
+else
+  if( $?TESTsander ) then
+      set sander = $TESTsander
+  else
+      set sander = ${AMBERHOME}/bin/pmemd.cuda_$1.MPI
+  endif
+endif
+
+
+cat > mdin <<EOF
+#short MD run
+&cntrl
+  imin = 0, nstlim = 10, dt = 0.001,
+  irest = 1, ntx = 5, ig = 9999,
+  temp0 = 298.0,
+  ntc = 2, ntf = 2, tol = 0.00001,
+  tautp = 1.0,
+  ntwx = 1, ntwe = 0, ntwr = 1, ntpr = 1,
+  cut = 8.0, iwrap = 1,
+  ntt =1, ntb = 1, ntp = 0,
+  nscm = 1000,
+  ioutfm=1, ntxo=2,
+/
+EOF
+
+set output =  mdout.GPU_$1
+
+set output_save =  mdout.GPU_$1.save
+
+touch dummy
+$DO_PARALLEL $sander -O -i mdin -c inpcrd -o $output <dummy || goto error
+#Use different dacdif tolerances based on precision model.
+if ( "$1" == "DPFP" ) then
+  #7 sig figs
+  ../../dacdif -r 1.0e-7 $output_save $output
+else
+  if ( $?DO_PARALLEL ) then
+    #Use slightly less precision for parallel runs.
+    #3 sig figs
+    #Special case for 4096wat since it has one value with
+    #a big relative error - so you get a 1 line failure.
+    ../../dacdif -r 1.0e-2 $output_save $output
+  else 
+    #5 sig figs
+    ../../dacdif -r 1.0e-5 $output_save $output
+  endif
+endif
+
+/bin/rm -f mdin logfile mdinfo dummy mdcrd restrt
+exit(0)
+
+error:
+echo "  ${0}:  Program error"
+exit(1)
+
+
+
+
