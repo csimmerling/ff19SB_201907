@@ -1,6 +1,6 @@
 logFile leap.log
 #
-# ----- leaprc for loading the ff14SB force field
+# ----- leaprc for loading the ff19SB force field
 # ----- NOTE: this is designed for PDB format 3!
 #
 #	load atom type hybridizations
