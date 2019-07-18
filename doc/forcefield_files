@@ -1,0 +1,46 @@
+Details on force field files in ff19SB
+
+In ff19SB, we update the backbone phi/psi dihedral parameters for every central residue separately. These new dihedral parameters include amino-acid specific CMAPs that are based on residue name, and the zeroed backbone phi/psi dihedral parameters (in atom name, C-N-CA-C, N-CA-C-N, C-N-CA-CB, CB-CA-C-N, HA-CA-C-O) from ff14SB that are based on the atom types. 
+In order to totally separate the new ff19SB parameters from the original ff14SB parameters, we created a new atom type XC for C-alpha for all central residues. All the bonds, angles, non-bonded parameters, and dihedral parameters excluding the backbone phi/psi dihedral parameters that involving C-alpha, are retained from ff14SB, but replacing the old ff14SB atom type CX with the new XC for C-alpha. All the backbone phi/psi dihedral parameters involving XC are zeroed. CMAP is applied to every central residue.
+In ff19SB, we also update non-bonded parameters for sulfur of Cys (including CYS, CYX and CYM) and Met (including MET), and for hydrogen attached to sulfur in CYS. All parameters are retained from GAFF2.
+
+Here below are the details on force field files in ff19SB:
+
+parm19.dat
+This is created in ff19SB. All parameters from parm10.dat are initially copied over. Then, all parameters involving CX except dihedral H1-CX-C-O are duplicated. The CX is replaced with XC in all duplicated lines. All parameters involving XC are identical to those with CX. H1-XC-C-O is not defined here since the parameters differ from H1-CX-C-O.
+
+frcmod.ff19SB
+This is created in ff19SB. All parameters from frcmod.ff14SB are initially copied over. Then, all parameters involving CX are duplicated. The CX is replaced with XC in all duplicated lines. The dihedral H1-CX-C-O are copied over from parm10.dat. CX is replaced with XC for this dihedral. The magnitude of this dihedral are zerod. The Lennard-Jones parameters for S, SH are both retained from atom type “s”(sulfur with one connected atom) from gaff2.dat, while Lennard-Jones parameters for HS are retained from atom type “hs” (hydrogen bonded to sulphur) from gaff2.dat. The CMAP parameters are updated for all central residues.
+
+amino19.dat
+This is created in ff19SB. All parameters from amino12.lib are initially copied over. Then, CX (alpha carbon atom type in ff14SB) is replaced with XC for the entire file. None of the amino acids here should use CX atom type for the alpha carbon.
+
+aminont12.lib
+This is an old file from ff14SB and is not changed in ff19SB. ff19SB parameters are not applied to terminal amino acids that do not have both a phi and psi.
+
+aminoct12.lib
+This is an old file from ff14SB and is not changed in ff19SB. ff19SB parameters are not applied to terminal amino acids that do not have both a phi and psi.
+leaprc.protein.ff19SB
+This is new for ff19SB. The goal of this file is to load in parm19.dat, frcmod.ff19SB, amino19.dat, aminont12.lib and aminoct12.lib
+
+Implementation for brand-new molecule or non-standard residue
+In ff19SB, the original ff14SB parameters are embedded with the same old atom type CX for C-alpha. So the user can choose to build topology file for pure ff19SB and mixed ff14SB/ff19SB via tleap.
+If the user choose to apply ff14SB parameters to a non-standard amino acid or brand-new residue and apply ff19SB to everything else in the protein:
+Load leaprc.protein.ff19SB
+Load the user-defined library file for that new residue, using the same old CX for C-alpha.
+Follow the procedures for building tleap input 
+If the user choose to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein:
+Load leaprc.protein.ff19SB
+Load the user-defined library file for that new residue, using XC for C-alpha.
+Modify the provided implementation file frcmod.ff19SB_XXX by relacing XXX with the new residue name defined in library file from step 2.
+Load the frcmod.ff19SB_XXX
+Follow the procedures for building tleap input 
+
+A few build ups that might go really wrong and even crazy
+Example 1:
+The user choose to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein. However, the user forgets about Step 3&4. Then ,the non-standard amino acid or brand-new molecule will use ff14SB00 (defined in ff19SB paper) that is not really a force field. 
+Example 2:
+The user choose to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein. However, the user forgets about Step 2 and still use CX for C-alpha. The user follows Step 3&4 correctly. Then ,the non-standard amino acid or brand-new molecule will use ff14SB+CMAP which will double count the phi/psi dihedral parameters involving C-alpha.
+
+Examples to be continued...but hopefully not
+
