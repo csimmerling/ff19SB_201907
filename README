@@ -1,0 +1,23 @@
+Directories
+amber_patch: update.201906
+forcefield_files: leaprc.protein.ff19SB, parm19.dat, frcmod.ff19SB, amino19.lib, frcmod.ff19SB_XXX
+test: test_forcefield_parameter and test_MDengine have necessary files for implementation and energy test 
+doc: forcefield_files.txt
+
+Todo list:
+1. compile Amber18+AmberTools19 with all updates applied following Amber 19 Reference Manual
+
+2. run copy.sh to copy all necessary files for ff19SB
+
+3. go to $AMBERHOME and run: 
+   ./update_amber --apply-patch=update.201906
+
+4. recompile amber following Amber 19 Reference Manual
+
+5. go to the test/test_forcefield_parameter, launch tleap with tleap.input to generate scramble.prmtop and launch run.sh to test if the energies in single_point_ene.output.ref can be reproduced
+
+6. go to the $AMBERHOME/test/ff19SB, launch Run to check if the CPU test passes
+
+7. go to the $AMBERHOME/test/cuda/ff19SB, launch Run to check if the GPU test passes
+
+8. refer to doc/forcefield_files.txt if you want to implement a non-standard amino acid with ff19SB
