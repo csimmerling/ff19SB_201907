@@ -20,4 +20,4 @@ Todo list:
 
 7. go to the $AMBERHOME/test/cuda/ff19SB, launch Run to check if the GPU test passes
 
-8. refer to doc/forcefield_files.txt if you want to implement a non-standard amino acid with ff19SB
+8. refer to doc/forcefield_files if you want to implement a non-standard amino acid with ff19SB
