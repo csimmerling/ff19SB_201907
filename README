@@ -7,7 +7,7 @@ doc: forcefield_files
 Todo list:
 1. compile Amber18+AmberTools19 with all updates applied following Amber 19 Reference Manual
 
-2. run copy.sh to copy all necessary files for ff19SB
+2. run copy.sh to copy ff19SB files to $AMBERHOME
 
 3. go to $AMBERHOME and run: 
    ./update_amber --apply-patch=update.201906
