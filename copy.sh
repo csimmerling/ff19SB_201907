@@ -4,7 +4,7 @@
 cp amber_patch/update.201906 $AMBERHOME
 
 #copy ff19SB files to $AMBERHOME
-cp forcefield_files/leaprc.protein.ff19SB into $AMBERHOME/dat/leap/cmd/
+cp forcefield_files/leaprc.protein.ff19SB $AMBERHOME/dat/leap/cmd/
 cp forcefield_files/frcmod.ff19SB $AMBERHOME/dat/leap/parm/
 cp forcefield_files/parm19.dat $AMBERHOME/dat/leap/parm/
 cp forcefield_files/amino19.lib $AMBERHOME/dat/leap/lib/
