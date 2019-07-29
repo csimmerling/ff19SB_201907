@@ -5,7 +5,7 @@ test: test_forcefield_parameter and test_MDengine have necessary files for imple
 doc: forcefield_files
 
 Todo list:
-1. compile Amber18+AmberTools19 with all updates applied following Amber 19 Reference Manual
+1. compile Amber18+AmberTools19 with all updates applied following Amber 19 Reference Manual.
 
 2. run copy.sh to copy ff19SB files to $AMBERHOME
 
@@ -21,3 +21,7 @@ Todo list:
 7. go to the $AMBERHOME/test/cuda/ff19SB, launch Run to check if the GPU test passes
 
 8. refer to doc/forcefield_files if you want to implement a non-standard amino acid with ff19SB
+
+Please email us if you run into any issues:
+chuan.tian.1@stonybrook.edu
+carlos.simmerling@gmail.com
