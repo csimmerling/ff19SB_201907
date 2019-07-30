@@ -21,7 +21,7 @@ How to set up ff19SB for Amber:
 
 6. go to $AMBERHOME/test/ff19SB, type "csh Run" to check if the CPU test passes
 
-7. go to $AMBERHOME/test/cuda/ff19SB, make sure GPU is accessible, type "csh Run" to check if the GPU test passes
+7. go to $AMBERHOME/test/cuda/ff19SB, make sure GPU is accessible, type "csh Run SPFP" and "csh Run DPFP" to check if the GPU test passes
 
 8. refer to doc/forcefield_files if you want to implement a non-standard amino acid with ff19SB
 
