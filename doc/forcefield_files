@@ -16,32 +16,34 @@ amino19.dat
 This was created in ff19SB. All parameters from amino12.lib were initially copied over. Then, CX (alpha carbon atom type in ff14SB) was replaced with XC for the entire file. None of the amino acids here should use CX atom type for the alpha carbon.
 
 aminont12.lib
-This is an old file from ff14SB and is not changed in ff19SB. ff19SB parameters are not applied to terminal amino acids that do not have both a phi and psi.
+This is an old file from ff14SB and is not changed in ff19SB. ff19SB parameters are not applied to terminal amino acids that do not have both a phi and psi. aminont12.lib will be used for N-terminal amino acids.
 
 aminoct12.lib
-This is an old file from ff14SB and is not changed in ff19SB. ff19SB parameters are not applied to terminal amino acids that do not have both a phi and psi.
+This is an old file from ff14SB and is not changed in ff19SB. ff19SB parameters are not applied to terminal amino acids that do not have both a phi and psi. aminoct12.lib will be used for C-terminal amino acids.
+
 leaprc.protein.ff19SB
-This is new for ff19SB. The goal of this file is to load in parm19.dat, frcmod.ff19SB, amino19.dat, aminont12.lib and aminoct12.lib
+This is new for ff19SB. The goal of this file is to load in parm19.dat, frcmod.ff19SB, amino19.dat, aminont12.lib and aminoct12.lib. This files should be sourced inside leap.
 
 Instructions for implementing ff19SB for a brand-new molecule or adding a non-standard residue
-In ff19SB, the original ff14SB parameters are embedded with the same old atom type CX for C-alpha. So the user can choose to build topology file for pure ff19SB and mixed ff14SB/ff19SB via tleap.
+In ff19SB, the original ff14SB parameters are embedded with the atom type CX for C-alpha. So the user can choose to build topology file for pure ff19SB and mixed ff14SB/ff19SB via tleap. ff14SB will be applied to residues that use the CX atom type. However, the ff19SB CMAP is applied based on residue name, so it is important that residues using CX for C-alpha do not also match the residues names for the standard amino acids or else the CMAP will also be applied, giving incorrect results.
+
 If the user chooses to apply ff14SB parameters to a non-standard amino acid or brand-new residue and apply ff19SB to everything else in the protein, please follow these steps:
 Load leaprc.protein.ff19SB
-Load the user-defined library file for that new residue, using the CX atom type for C-alpha.
+Load the user-defined library file for that new residue, using the CX atom type for C-alpha. The residue name must not match the standard amino acids in ff19SB!
 Follow the procedures for building tleap input 
 
 If the user chooses to apply ff19SB parameters (using the LEU CMAP parameters that we recommend as the best generic model amino acid) to a non-standard amino acid or brand-new residue and also everything else in the protein:
 Load leaprc.protein.ff19SB
 Load the user-defined library file for that new residue, using XC for C-alpha.
-Modify the provided implementation file frcmod.ff19SB_XXX by relacing XXX with the new residue name defined in library file from step 2.
+Modify the provided implementation file frcmod.ff19SB_XXX by replacing XXX with the new residue name defined in library file from step 2.
 Load the frcmod.ff19SB_XXX
 Follow the procedures for building tleap input 
 
 A few build ups that might go really wrong and even crazy, so these should be avoided!
 Example 1:
-The user chooses to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein. However, the user forgets about Step 3&4. Then ,the non-standard amino acid or brand-new molecule will use ff14SB00 (defined in ff19SB paper) that is not really a force field. 
+The user chooses to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein. However, the user forgets about adding the new residue to the frcmod.ff19SB_XXX file. Then ,the non-standard amino acid or brand-new molecule will use ff14SB00 (defined in ff19SB paper) that is not really a force field. 
 Example 2:
-The user choose to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein. However, the user forgets about Step 2 and still use CX for C-alpha. The user follows Step 3&4 correctly. Then ,the non-standard amino acid or brand-new molecule will use ff14SB+CMAP which will double count the phi/psi dihedral parameters involving C-alpha.
+The user chooses to apply ff19SB parameters to a non-standard amino acid or brand-new residue and also everything else in the protein. However, the user forgets about using the XC atom type and still uses CX for C-alpha. The user creates the frcmod.ff19SB_XXX correctly. Then ,the non-standard amino acid or brand-new molecule will use ff14SB and also use the ff19SB CMAP which will double count the phi/psi dihedral parameters involving C-alpha and give incorrect results.
 
 Examples to be continued...but hopefully not
 
