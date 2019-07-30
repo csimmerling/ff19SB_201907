@@ -25,7 +25,7 @@ How to set up ff19SB for Amber:
 
 8. refer to doc/forcefield_files if you want to implement a non-standard amino acid with ff19SB
 
-9. NEED TO TELL THEM HOW TO USE IT, OR AN EXAMPLE
+9.In order to use ff19SB, source leaprc.protein.ff19SB when you run tleap or xleap.
 
 Please email us if you run into any issues:
 chuan.tian.1@stonybrook.edu
