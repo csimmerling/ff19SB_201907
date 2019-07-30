@@ -10,7 +10,7 @@ doc: forcefield_files
 How to set up ff19SB for Amber:
 1. compile Amber18+AmberTools19 with all updates applied following the Amber 19 Reference Manual. You cannot use an older version of Amber.
 
-2. run copy.sh, this will copy all of the ff19SB files to $AMBERHOME
+2. go to directory ff19SB_201907 and run copy.sh, this will copy all of the ff19SB files to $AMBERHOME
 
 3. go to $AMBERHOME and run: 
    ./update_amber --apply-patch=update.201906
