@@ -17,11 +17,11 @@ How to set up ff19SB for Amber:
 
 4. recompile amber following the Amber 19 Reference Manual (you must recompile or ff19SB will not give correct results!)
 
-5. go to the test/test_forcefield_parameter, launch tleap with tleap.input to generate scramble.prmtop and launch run.sh to test if the energies in single_point_ene.output.ref can be reproduced
+5. go to the test/test_forcefield_parameter, run "tleap -f tleap.input" to generate scramble.prmtop. Type "bash run.sh" and "vimdiff single_point_ene.output.ref single_point_ene.output" to check if all energy terms have identical values
 
-6. go to $AMBERHOME/test/ff19SB, launch Run to check if the CPU test passes
+6. go to $AMBERHOME/test/ff19SB, type "csh Run" to check if the CPU test passes
 
-7. go to $AMBERHOME/test/cuda/ff19SB, launch Run to check if the GPU test passes
+7. go to $AMBERHOME/test/cuda/ff19SB, make sure GPU is accessible, type "csh Run" to check if the GPU test passes
 
 8. refer to doc/forcefield_files if you want to implement a non-standard amino acid with ff19SB
 
